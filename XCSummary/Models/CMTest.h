@@ -28,4 +28,7 @@ typedef NS_ENUM(NSInteger, CMTestStatus)
 @property (nonatomic, strong, readonly) NSArray <CMTest *> *subTests;
 @property (nonatomic, strong, readonly) NSArray <CMActivitySummary *> *activities;
 
+@property (nonatomic, strong) NSString *divID;
+@property (nonatomic, strong) NSString *parentID;
+
 @end

@@ -7,4 +7,22 @@
     <body>
         %@
     </body>
+    
+    <script language="javascript">
+        function toggle(contentDiv) {
+            console.log(contentDiv);
+            var block = document.getElementsByClassName(contentDiv);
+            if (block.length > 0){
+                for (i = 0; i < block.length; i++) {
+                    if(block[i].style.display == "block") {
+                            block[i].style.display = "none";
+                        }
+                    else {
+                            block[i].style.display = "block";
+                        }
+                }
+            }
+        }
+    </script>
+    
 </html>

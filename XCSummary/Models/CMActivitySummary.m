@@ -13,17 +13,22 @@
 
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary
 {
+//    NSLog(@"dictionary: %@",dictionary);
     self = [super init];
     if (self)
     {
         NSString *uuidString = dictionary[@"UUID"];
         NSArray *subActivitesInfo = dictionary[@"SubActivities"];
+        NSArray *attachmentsInfo = dictionary[@"Attachments"];
         _title = dictionary[@"Title"];
         _uuid = [[NSUUID alloc] initWithUUIDString:uuidString];
         _startTimeInterval = [dictionary[@"StartTimeInterval"] doubleValue];
         _finishTimeInterval = [dictionary[@"FinishTimeInterval"] doubleValue];
         _hasScreenshotData = [dictionary[@"HasScreenshotData"] boolValue];
         _hasElementsOfInterest = [dictionary[@"HasElementsOfInterest"] boolValue];
+        _attachments = [attachmentsInfo map:^id(NSDictionary *attachmentInfo, NSUInteger index, BOOL *stop) {
+            return [[CMAttachment alloc] initWithDictionary:attachmentInfo];
+        }];
         _subActivities = [subActivitesInfo map:^id(NSDictionary *activityInfo, NSUInteger index, BOOL *stop) {
             return [[CMActivitySummary alloc] initWithDictionary:activityInfo];
         }];

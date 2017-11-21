@@ -19,6 +19,10 @@ CMTestStatus CMTestStatusFromString(NSString * string);
     self = [super initWithDictionary:dictionary];
     if (self)
     {
+        
+        NSString *uuid = [[[NSUUID UUID] UUIDString] stringByReplacingOccurrencesOfString:@"-" withString:@""];
+        _divID = [NSString stringWithFormat:@"id%@",uuid];
+        
         NSArray *rawTests = dictionary[@"Subtests"];
         NSString *status = dictionary[@"TestStatus"];
         NSArray *activities = dictionary[@"ActivitySummaries"];
@@ -28,13 +32,16 @@ CMTestStatus CMTestStatusFromString(NSString * string);
         _testObjectClass = dictionary[@"TestObjectClass"];
         _duration = [dictionary[@"Duration"] doubleValue];
         _subTests = [rawTests map:^id(NSDictionary *rawTest, NSUInteger index, BOOL *stop) {
-            return [[CMTest alloc] initWithDictionary:rawTest];
+            CMTest *subTest = [[CMTest alloc] initWithDictionary:rawTest];
+            subTest.parentID = _divID;
+            return subTest;
         }];
         _activities = [activities map:^id(NSDictionary *rawActivity, NSUInteger index, BOOL *stop) {
             return [[CMActivitySummary alloc] initWithDictionary:rawActivity];
         }];
         _status = CMTestStatusFromString(status);
         _testSummaryGUID = [[NSUUID alloc] initWithUUIDString:summaryGUIDString];
+        
     }
     return self;
 }

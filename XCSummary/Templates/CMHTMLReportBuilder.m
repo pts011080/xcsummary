@@ -80,7 +80,9 @@
         [self _appendTestCase:obj indentation:indentation];
         if (obj.subTests.count > 0)
         {
+            [self.resultString appendString:[NSString stringWithFormat:@"<div class=\"%@\" style=\"display: block\" >",obj.divID]];
             [self appendTests:obj.subTests indentation:indentation + 50];
+            [self.resultString appendString:@"</div>"];
         }
         else
         {
@@ -88,12 +90,16 @@
             {
                 if (obj.status == CMTestStatusFailure)
                 {
+                    [self.resultString appendString:[NSString stringWithFormat:@"<div class=\"%@\" style=\"display: block\" >",obj.divID]];
                     [self _appendActivities:obj.activities indentation:indentation + 50];
+                    [self.resultString appendString:@"</div>"];
                 }
             }
             else
             {
+                [self.resultString appendString:[NSString stringWithFormat:@"<div class=\"%@\" style=\"display: block\" >",obj.divID]];
                 [self _appendActivities:obj.activities indentation:indentation + 50];
+                [self.resultString appendString:@"</div>"];
             }
         }
     }];
@@ -115,11 +121,18 @@
 
 - (void)_appendTestCase:(CMTest *)testCase indentation:(CGFloat)indentation
 {
+    NSLog(@"testCase: %@",testCase.divID);
     NSString *templateFormat = testCase.status == CMTestStatusFailure ?
     [self _decodeTemplateWithName:TestCaseTemplateFailed] :
     [self _decodeTemplateWithName:TestCaseTemplate];
     NSString *composedString = [NSString stringWithFormat:templateFormat, indentation, @"px", testCase.testName, testCase.duration];
+    
+    [self _appendBeginingForTest:testCase];
+    
     [self.resultString appendString:composedString];
+    
+    [self _appendEndForTest:testCase];
+    
 }
 
 - (void)_appendActivities:(NSArray *)activities indentation:(CGFloat)indentation
@@ -137,12 +150,12 @@
     if (activity.hasScreenshotData)
     {
         templateFormat = [self _decodeTemplateWithName:ActivityTemplateWithImage];
-        NSString *imageName = [NSString stringWithFormat:@"Screenshot_%@.png", activity.uuid.UUIDString];
+        NSString *imageName = [NSString stringWithFormat:@"Screenshot_%@.jpg", activity.uuid.UUIDString];
         NSString *fullPath = [self.path stringByAppendingPathComponent:imageName];
         
         [self.fileManager copyItemAtPath:fullPath toPath:[self.htmlResourcePath stringByAppendingPathComponent:imageName] error:nil];
         
-        NSString *localImageName = [NSString stringWithFormat:@"resources/Screenshot_%@.png", activity.uuid.UUIDString];
+        NSString *localImageName = [NSString stringWithFormat:@"resources/Screenshot_%@.jpg", activity.uuid.UUIDString];
         composedString = [NSString stringWithFormat:templateFormat, indentation, @"px", activity.title, activity.finishTimeInterval - activity.startTimeInterval, localImageName];
     }
     else
@@ -152,6 +165,18 @@
     }
     
     [self.resultString appendString:composedString];
+}
+
+- (void)_appendBeginingForTest:(CMTest *)test
+{
+//    NSString *testBegining = [NSString stringWithFormat:@"<div id=\"%@\" %@ onclick=\"javascript:toggle('%@');\" style=\"display: block\" margin-left: 10.00px; background-color: #CBF4A3; padding:10px; text-align: right;", test.divID, !test.parentID || [test.parentID isEqualToString:@""]? @"":[NSString stringWithFormat:@" class=\"%@\" ",test.parentID] ,test.divID];
+    NSString *testBegining = [NSString stringWithFormat:@"<div id=\"%@\" onclick=\"javascript:toggle('%@');\" style=\"display: block\" margin-left: 10.00px; background-color: #CBF4A3; padding:10px; text-align: right;", test.divID,test.divID];
+    [self.resultString appendString:testBegining];
+}
+
+- (void)_appendEndForTest:(CMTest *)test
+{
+    [self.resultString appendString:@"</div>"];
 }
 
 #pragma mark - File Operations
