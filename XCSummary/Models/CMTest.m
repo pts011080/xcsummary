@@ -27,7 +27,23 @@ CMTestStatus CMTestStatusFromString(NSString * string);
         NSString *status = dictionary[@"TestStatus"];
         NSArray *activities = dictionary[@"ActivitySummaries"];
         NSString *summaryGUIDString = dictionary[@"TestSummaryGUID"];
-        _testName = dictionary[@"TestName"];
+        __block NSString *name = @"";
+//        _testName = dictionary[@"TestName"];
+        NSArray *names = [dictionary[@"TestName"] componentsSeparatedByString:@"_"];
+        [names enumerateObjectsUsingBlock:^(NSString* strs, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (idx == 0) {
+                if (strs.length >= 3 && [[strs substringToIndex:3] isEqualToString:@"ccc"]) {
+                    name = [name stringByAppendingString:[strs substringFromIndex:3]];
+                }else{
+                    name = strs;
+                }
+            }else{
+                name = [name stringByAppendingString:[NSString stringWithFormat:@"%@%@",[name isEqualToString:@""]?@"":@" ",strs]];
+            }
+        }];
+        
+        _testName = name;
+        
         _testIdentifier = dictionary[@"TestIdentifier"];
         _testObjectClass = dictionary[@"TestObjectClass"];
         _duration = [dictionary[@"Duration"] doubleValue];
