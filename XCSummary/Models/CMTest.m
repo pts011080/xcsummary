@@ -32,8 +32,10 @@ CMTestStatus CMTestStatusFromString(NSString * string);
         NSArray *names = [dictionary[@"TestName"] componentsSeparatedByString:@"_"];
         [names enumerateObjectsUsingBlock:^(NSString* strs, NSUInteger idx, BOOL * _Nonnull stop) {
             if (idx == 0) {
-                if (strs.length >= 3 && [[strs substringToIndex:3] isEqualToString:@"ccc"]) {
+                if (strs.length >= 3 && [[[strs substringToIndex:3] uppercaseString] isEqualToString:@"CCC"]) {
                     name = [name stringByAppendingString:[strs substringFromIndex:3]];
+                }else if (strs.length >= 7 && [[[strs substringToIndex:7] uppercaseString] isEqualToString:@"TESTFOR"]) {
+                    name = [name stringByAppendingString:[strs substringFromIndex:7]];
                 }else{
                     name = strs;
                 }
